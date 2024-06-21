@@ -15,5 +15,6 @@ public sealed class Scope
 
     public int EnvironmentalCorrosivityCategoryId { get; init; }
     public ICollection<Element> Elements = new List<Element>();
+    public IDictionary<(string, int), Element> ElementDictionary = new Dictionary<(string, int), Element>();
     public EnvironmentalCorrosivityCategory EnvironmentalCorrosivityCategory { get; init; } = null!;
 }

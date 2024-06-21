@@ -15,6 +15,7 @@ public abstract class Element
         Drawing = drawing;
         Number = number;
         scope.Elements.Add(this);
+        scope.ElementDictionary.Add((drawing, number), this);
     }
 
     public int ScopeId { get; init; }
@@ -23,4 +24,6 @@ public abstract class Element
     public decimal Temperature { get; init; }
     public decimal Length { get; init; }
     public Scope Scope { get; init; } = null!;
+    public int ProductId { get; init; }
+    public Product? Product { get; init; }
 }

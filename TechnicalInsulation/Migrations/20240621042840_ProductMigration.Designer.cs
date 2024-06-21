@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechnicalInsulation.Context;
 
@@ -11,9 +12,11 @@ using TechnicalInsulation.Context;
 namespace TechnicalInsulation.Migrations
 {
     [DbContext(typeof(TechnicalInsulationContext))]
-    partial class TechnicalInsulationContextModelSnapshot : ModelSnapshot
+    [Migration("20240621042840_ProductMigration")]
+    partial class ProductMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,9 +55,6 @@ namespace TechnicalInsulation.Migrations
                         .HasName("PK_Element");
 
                     b.HasIndex("ScopeId");
-
-                    b.HasIndex("Drawing", "Number")
-                        .IsUnique();
 
                     b.ToTable("Element", "mas");
 
@@ -227,7 +227,7 @@ namespace TechnicalInsulation.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId")
-                        .HasName("PK_Product");
+                        .HasName("PK_Element");
 
                     b.HasIndex("Drawing", "Number")
                         .IsUnique();

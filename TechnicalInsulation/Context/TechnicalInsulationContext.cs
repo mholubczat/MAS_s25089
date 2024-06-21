@@ -8,6 +8,7 @@ namespace TechnicalInsulation.Context;
 public class TechnicalInsulationContext : DbContext
 {
     private const string Schema = "mas";
+
     public TechnicalInsulationContext()
     {
     }
@@ -57,19 +58,20 @@ public class TechnicalInsulationContext : DbContext
 
             entity.HasData(Enum.GetValues(typeof(EnvironmentalCorrosivityCategoryEnum))
                 .Cast<EnvironmentalCorrosivityCategoryEnum>()
-                .Select(s => 
-                    new EnvironmentalCorrosivityCategory{ 
+                .Select(s =>
+                    new EnvironmentalCorrosivityCategory
+                    {
                         EnvironmentalCorrosivityCategoryId = (int)s + 1,
                         Name = s.ToString()
                     })
             );
         });
-        
+
         modelBuilder.Entity<Element>(entity =>
         {
-            entity.HasKey(e => new {e.Drawing, e.Number}).HasName("PK_Element");
+            entity.HasKey(e => new { e.Drawing, e.Number }).HasName("PK_Element");
             entity.ToTable(nameof(Element), Schema);
-            
+
             entity.Property(e => e.Drawing).HasMaxLength(100);
             entity.Property(e => e.Number);
             entity.Property(e => e.Length);
@@ -88,14 +90,14 @@ public class TechnicalInsulationContext : DbContext
             entity.Property(e => e.FirstDimension);
             entity.Property(e => e.SecondDimension).IsRequired(false);
         });
-        
+
         modelBuilder.Entity<Vessel>(entity =>
         {
             entity.Property(e => e.Radius);
             entity.HasMany<Pipeline>(e => e.Pipes);
             entity.HasMany<VesselBottom>(e => e.VesselBottoms);
         });
-        
+
         modelBuilder.Entity<Pipeline>(entity =>
         {
             entity.Property(e => e.NominalDiameter);
@@ -106,7 +108,7 @@ public class TechnicalInsulationContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.PipelineTypeId);
         });
-        
+
         modelBuilder.Entity<VesselBottom>(entity =>
         {
             entity.HasKey(e => e.VesselBottomId).HasName("PK_VesselBottom");
@@ -117,14 +119,15 @@ public class TechnicalInsulationContext : DbContext
 
             entity.HasData(Enum.GetValues(typeof(VesselBottomEnum))
                 .Cast<VesselBottomEnum>()
-                .Select(s => 
-                    new VesselBottom{ 
+                .Select(s =>
+                    new VesselBottom
+                    {
                         VesselBottomId = (int)s + 1,
                         Name = s.ToString()
                     })
             );
         });
-        
+
         modelBuilder.Entity<PipelineType>(entity =>
         {
             entity.HasKey(e => e.PipelineTypeId).HasName("PK_PipelineType");
@@ -135,12 +138,27 @@ public class TechnicalInsulationContext : DbContext
 
             entity.HasData(Enum.GetValues(typeof(PipelineTypeEnum))
                 .Cast<PipelineTypeEnum>()
-                .Select(s => 
-                    new PipelineType{ 
+                .Select(s =>
+                    new PipelineType
+                    {
                         PipelineTypeId = (int)s + 1,
                         Name = s.ToString()
                     })
             );
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.ProductId).HasName("PK_Product");
+            entity.ToTable(nameof(Product), Schema);
+
+            entity.Property(e => e.Area);
+            entity.Property(e => e.Price);
+
+            entity.HasOne<Element>(e => e.Element)
+                .WithOne(c => c.Product)
+                .HasForeignKey<Product>(e => new { e.Drawing, e.Number })
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
