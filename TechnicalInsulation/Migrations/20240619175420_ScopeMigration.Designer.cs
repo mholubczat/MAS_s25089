@@ -12,7 +12,7 @@ using TechnicalInsulation.Context;
 namespace TechnicalInsulation.Migrations
 {
     [DbContext(typeof(TechnicalInsulationContext))]
-    [Migration("20240615100224_ScopeMigration")]
+    [Migration("20240619175420_ScopeMigration")]
     partial class ScopeMigration
     {
         /// <inheritdoc />
@@ -27,50 +27,48 @@ namespace TechnicalInsulation.Migrations
 
             modelBuilder.Entity("TechnicalInsulation.Models.EnvironmentalCorrosivityCategory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("EnvironmentalCorrosivityCategoryId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
-                    b.HasKey("Id");
+                    b.HasKey("EnvironmentalCorrosivityCategoryId")
+                        .HasName("PK_EnvironmentalCorrosivityCategory");
 
-                    b.ToTable("CorrosivityCategories");
+                    b.ToTable("EnvironmentalCorrosivityCategory", "mas");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            EnvironmentalCorrosivityCategoryId = 1,
                             Name = "C1"
                         },
                         new
                         {
-                            Id = 2,
+                            EnvironmentalCorrosivityCategoryId = 2,
                             Name = "C2"
                         },
                         new
                         {
-                            Id = 3,
+                            EnvironmentalCorrosivityCategoryId = 3,
                             Name = "C3"
                         },
                         new
                         {
-                            Id = 4,
+                            EnvironmentalCorrosivityCategoryId = 4,
                             Name = "C4"
                         },
                         new
                         {
-                            Id = 5,
+                            EnvironmentalCorrosivityCategoryId = 5,
                             Name = "C5I"
                         },
                         new
                         {
-                            Id = 6,
+                            EnvironmentalCorrosivityCategoryId = 6,
                             Name = "C5M"
                         });
                 });

@@ -17,16 +17,16 @@ namespace TechnicalInsulation.Migrations
                 name: "mas");
 
             migrationBuilder.CreateTable(
-                name: "CorrosivityCategories",
+                name: "EnvironmentalCorrosivityCategory",
+                schema: "mas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnvironmentalCorrosivityCategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CorrosivityCategories", x => x.Id);
+                    table.PrimaryKey("PK_EnvironmentalCorrosivityCategory", x => x.EnvironmentalCorrosivityCategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,15 +49,17 @@ namespace TechnicalInsulation.Migrations
                 {
                     table.PrimaryKey("PK_Scope", x => x.ScopeId);
                     table.ForeignKey(
-                        name: "FK_Scope_CorrosivityCategories_EnvironmentalCorrosivityCategoryId",
+                        name: "FK_Scope_EnvironmentalCorrosivityCategory_EnvironmentalCorrosivityCategoryId",
                         column: x => x.EnvironmentalCorrosivityCategoryId,
-                        principalTable: "CorrosivityCategories",
-                        principalColumn: "Id");
+                        principalSchema: "mas",
+                        principalTable: "EnvironmentalCorrosivityCategory",
+                        principalColumn: "EnvironmentalCorrosivityCategoryId");
                 });
 
             migrationBuilder.InsertData(
-                table: "CorrosivityCategories",
-                columns: new[] { "Id", "Name" },
+                schema: "mas",
+                table: "EnvironmentalCorrosivityCategory",
+                columns: new[] { "EnvironmentalCorrosivityCategoryId", "Name" },
                 values: new object[,]
                 {
                     { 1, "C1" },
@@ -83,7 +85,8 @@ namespace TechnicalInsulation.Migrations
                 schema: "mas");
 
             migrationBuilder.DropTable(
-                name: "CorrosivityCategories");
+                name: "EnvironmentalCorrosivityCategory",
+                schema: "mas");
         }
     }
 }

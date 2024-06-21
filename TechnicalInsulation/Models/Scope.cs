@@ -1,3 +1,5 @@
+using TechnicalInsulation.Models.Elements;
+
 namespace TechnicalInsulation.Models;
 
 public sealed class Scope
@@ -12,5 +14,6 @@ public sealed class Scope
     public int DesignAirVelocity { get; init; }
 
     public int EnvironmentalCorrosivityCategoryId { get; init; }
+    public ICollection<Element> Elements = new List<Element>();
     public EnvironmentalCorrosivityCategory EnvironmentalCorrosivityCategory { get; init; } = null!;
 }
