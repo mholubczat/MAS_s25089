@@ -25,5 +25,5 @@ public abstract class Element
     public decimal Length { get; init; }
     public Scope Scope { get; init; } = null!;
     public int ProductId { get; init; }
-    public Product? Product { get; init; }
+    public Product? Product { get; set; }
 }

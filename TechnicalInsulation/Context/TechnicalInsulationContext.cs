@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TechnicalInsulation.Enums;
 using TechnicalInsulation.Models;
 using TechnicalInsulation.Models.Elements;
+using TechnicalInsulation.Models.Workers;
 
 namespace TechnicalInsulation.Context;
 
@@ -159,6 +160,58 @@ public class TechnicalInsulationContext : DbContext
                 .WithOne(c => c.Product)
                 .HasForeignKey<Product>(e => new { e.Drawing, e.Number })
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany<Production>(e => e.InsulationProductions)
+                .WithOne(c => c.Product)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+        
+        modelBuilder.Entity<Worker>(entity =>
+        {
+            entity.HasKey(e => e.WorkerId).HasName("PK_Worker");
+            entity.ToTable(nameof(Worker), Schema);
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.LastName).HasMaxLength(100);
+            entity.Property(e => e.HiredOn);
+            entity.Property(e => e.Wage);
+            
+            entity.HasMany<Production>(e => e.InsulationProductions)
+                .WithOne(c => c.Worker)
+                .HasForeignKey(e => e.WorkerId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne<Insulator>(e => e.Insulator)
+                .WithOne(c => c.Worker)
+                .HasForeignKey<Insulator>(e => e.WorkerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<CostEstimator>(e => e.CostEstimator)
+                .WithOne(c => c.Worker)
+                .HasForeignKey<CostEstimator>(e => e.WorkerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }); 
+        
+        modelBuilder.Entity<Insulator>(entity =>
+        {
+            entity.HasKey(e => e.WorkerId);
+            entity.ToTable(nameof(Insulator), Schema);
+        });
+
+        modelBuilder.Entity<CostEstimator>(entity =>
+        {
+            entity.HasKey(e => e.WorkerId);
+            entity.ToTable(nameof(CostEstimator), Schema);
+        });
+
+        modelBuilder.Entity<Production>(entity =>
+        {
+            entity.HasKey(e => new { e.ProductId, e.WorkerId }).HasName("PK_Production");
+            entity.ToTable(nameof(Production), Schema);
+
+            entity.Property(e => e.EstimatedWorkload).IsRequired(false);
+            entity.Property(e => e.ActualWorkload).IsRequired(false);
         });
     }
 }

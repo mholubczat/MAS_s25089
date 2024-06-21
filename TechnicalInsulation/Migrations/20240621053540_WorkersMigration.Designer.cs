@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechnicalInsulation.Context;
 
@@ -11,9 +12,11 @@ using TechnicalInsulation.Context;
 namespace TechnicalInsulation.Migrations
 {
     [DbContext(typeof(TechnicalInsulationContext))]
-    partial class TechnicalInsulationContextModelSnapshot : ModelSnapshot
+    [Migration("20240621053540_WorkersMigration")]
+    partial class WorkersMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
