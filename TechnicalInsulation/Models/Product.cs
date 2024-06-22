@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using TechnicalInsulation.Models.Elements;
+using TechnicalInsulation.Models.Materials;
 
 namespace TechnicalInsulation.Models;
 
@@ -13,4 +14,5 @@ public class Product
     public Element Element { get; init; } = null!;
     public decimal Price { get; init; }
     public ICollection<Production> InsulationProductions { get; init; } = new List<Production>();
+    public ICollection<Material> Materials { get; init; } = new List<Material>();
 }

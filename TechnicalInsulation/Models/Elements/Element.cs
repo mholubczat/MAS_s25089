@@ -15,7 +15,6 @@ public abstract class Element
         Drawing = drawing;
         Number = number;
         scope.Elements.Add(this);
-        scope.ElementDictionary.Add((drawing, number), this);
     }
 
     public int ScopeId { get; init; }

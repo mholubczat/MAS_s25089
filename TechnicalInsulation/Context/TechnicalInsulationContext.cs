@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TechnicalInsulation.Enums;
 using TechnicalInsulation.Models;
 using TechnicalInsulation.Models.Elements;
+using TechnicalInsulation.Models.Materials;
 using TechnicalInsulation.Models.Workers;
 
 namespace TechnicalInsulation.Context;
@@ -41,7 +42,8 @@ public class TechnicalInsulationContext : DbContext
 
             entity.HasOne(e => e.EnvironmentalCorrosivityCategory)
                 .WithMany()
-                .HasForeignKey(e => e.EnvironmentalCorrosivityCategoryId);
+                .HasForeignKey(e => e.EnvironmentalCorrosivityCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasMany(e => e.Elements)
                 .WithOne(c => c.Scope)
@@ -107,7 +109,8 @@ public class TechnicalInsulationContext : DbContext
 
             entity.HasOne(e => e.PipelineType)
                 .WithMany()
-                .HasForeignKey(e => e.PipelineTypeId);
+                .HasForeignKey(e => e.PipelineTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<VesselBottom>(entity =>
@@ -153,6 +156,7 @@ public class TechnicalInsulationContext : DbContext
             entity.HasKey(e => e.ProductId).HasName("PK_Product");
             entity.ToTable(nameof(Product), Schema);
 
+            entity.Property(e => e.ProductId).ValueGeneratedOnAdd();
             entity.Property(e => e.Area);
             entity.Property(e => e.Price);
 
@@ -165,6 +169,11 @@ public class TechnicalInsulationContext : DbContext
                 .WithOne(c => c.Product)
                 .HasForeignKey(e => e.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+            
+            entity.HasMany<Material>(e => e.Materials)
+                .WithOne()
+                .HasForeignKey(e => e.MaterialId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
         
         modelBuilder.Entity<Worker>(entity =>
@@ -172,6 +181,7 @@ public class TechnicalInsulationContext : DbContext
             entity.HasKey(e => e.WorkerId).HasName("PK_Worker");
             entity.ToTable(nameof(Worker), Schema);
 
+            entity.Property(e => e.WorkerId).ValueGeneratedOnAdd();
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.HiredOn);
@@ -183,12 +193,12 @@ public class TechnicalInsulationContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne<Insulator>(e => e.Insulator)
-                .WithOne(c => c.Worker)
+                .WithOne()
                 .HasForeignKey<Insulator>(e => e.WorkerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne<CostEstimator>(e => e.CostEstimator)
-                .WithOne(c => c.Worker)
+                .WithOne()
                 .HasForeignKey<CostEstimator>(e => e.WorkerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }); 
@@ -197,12 +207,22 @@ public class TechnicalInsulationContext : DbContext
         {
             entity.HasKey(e => e.WorkerId);
             entity.ToTable(nameof(Insulator), Schema);
+            
+            entity.HasOne(e => e.Worker)
+                .WithOne(e => e.Insulator)
+                .HasForeignKey<Insulator>(e => e.WorkerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CostEstimator>(entity =>
         {
             entity.HasKey(e => e.WorkerId);
             entity.ToTable(nameof(CostEstimator), Schema);
+            
+            entity.HasOne(e => e.Worker)
+                .WithOne(e => e.CostEstimator)
+                .HasForeignKey<CostEstimator>(e => e.WorkerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Production>(entity =>
@@ -212,6 +232,105 @@ public class TechnicalInsulationContext : DbContext
 
             entity.Property(e => e.EstimatedWorkload).IsRequired(false);
             entity.Property(e => e.ActualWorkload).IsRequired(false);
+        });
+        
+        modelBuilder.Entity<Material>(entity =>
+        {
+            entity.HasKey(e => e.MaterialId).HasName("PK_Material");
+            entity.ToTable(nameof(Material), Schema);
+
+            entity.Property(e => e.MaterialId).ValueGeneratedOnAdd();
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Density);
+            entity.Property(e => e.Thickness);
+            entity.Property(e => e.PricePerSquareMeter).IsRequired(false);
+            entity.Property(e => e.PricePerCubicMeter).IsRequired(false);
+
+            entity.HasOne<Insulation>(e => e.Insulation)
+                .WithOne()
+                .HasForeignKey<Insulation>(e => e.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne<Casing>(e => e.Casing)
+                .WithOne()
+                .HasForeignKey<Casing>(e => e.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Insulation>(entity =>
+        {
+            entity.HasKey(e => e.MaterialId);
+            entity.ToTable(nameof(Insulation), Schema);
+            
+            entity.Property(e => e.MaxTemperature);
+            entity.Property(e => e.ThermalConductivityCoefficient);
+            
+            entity.HasOne<Material>(e => e.Material)
+                .WithOne(m => m.Insulation)
+                .HasForeignKey<Insulation>(e => e.MaterialId);
+
+            entity.HasOne<Wiring>()
+                .WithMany()
+                .HasForeignKey(e => e.WiringId);
+        });
+        
+        modelBuilder.Entity<Casing>(entity =>
+        {
+            entity.HasKey(e => e.MaterialId);
+            entity.ToTable(nameof(Casing), Schema);
+            
+            entity.HasOne<Material>(e => e.Material)
+                .WithOne(m => m.Casing)
+                .HasForeignKey<Casing>(e => e.MaterialId);
+
+
+            entity.HasOne<EnvironmentalCorrosivityCategory>()
+                .WithMany()
+                .HasForeignKey(e => e.EnvironmentalCorrosivityCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            
+            entity.HasOne<Profile>()
+                .WithMany()
+                .HasForeignKey(e => e.ProfileId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+        
+        modelBuilder.Entity<Wiring>(entity =>
+        {
+            entity.HasKey(e => e.WiringId).HasName("PK_Wiring");
+            entity.ToTable(nameof(Wiring), Schema);
+
+            entity.Property(e => e.WiringId).ValueGeneratedNever();
+            entity.Property(e => e.Name).HasMaxLength(20);
+
+            entity.HasData(Enum.GetValues(typeof(WiringEnum))
+                .Cast<WiringEnum>()
+                .Select(s =>
+                    new Wiring
+                    {
+                        WiringId = (int)s + 1,
+                        Name = s.ToString()
+                    })
+            );
+        });
+        
+        modelBuilder.Entity<Profile>(entity =>
+        {
+            entity.HasKey(e => e.ProfileId).HasName("PK_Profile");
+            entity.ToTable(nameof(Profile), Schema);
+
+            entity.Property(e => e.ProfileId).ValueGeneratedNever();
+            entity.Property(e => e.Name).HasMaxLength(20);
+
+            entity.HasData(Enum.GetValues(typeof(ProfileEnum))
+                .Cast<ProfileEnum>()
+                .Select(s =>
+                    new Profile
+                    {
+                        ProfileId = (int)s + 1,
+                        Name = s.ToString()
+                    })
+            );
         });
     }
 }

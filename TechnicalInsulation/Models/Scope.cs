@@ -13,8 +13,7 @@ public sealed class Scope
     public int DesignAirTemperature { get; init; }
     public int DesignAirVelocity { get; init; }
 
-    public int EnvironmentalCorrosivityCategoryId { get; init; }
     public ICollection<Element> Elements = new List<Element>();
-    public IDictionary<(string, int), Element> ElementDictionary = new Dictionary<(string, int), Element>();
+    public int EnvironmentalCorrosivityCategoryId { get; init; }
     public EnvironmentalCorrosivityCategory EnvironmentalCorrosivityCategory { get; init; } = null!;
 }
