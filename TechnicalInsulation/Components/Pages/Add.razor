@@ -1,0 +1,177 @@
+﻿@page "/add-element"
+@inject HttpClient HttpClient
+@using TechnicalInsulation.Enums
+@using TechnicalInsulation.Models.Dtos
+@using TechnicalInsulation.Models.Elements
+
+@rendermode InteractiveServer
+
+<PageTitle>Add Element</PageTitle>
+
+<div class="add row">
+    <h1>Adding Insulated Element</h1>
+    <h2>Basic Data</h2>
+    <div class="form-group col-md-3">
+        <label for="Drawing">Drawing</label>
+        <input id="Drawing" name="Drawing" type="text" class="form-control" @bind="_dto.Drawing"/>
+    </div>
+
+    <div class="form-group col-md-2">
+        <label for="Number">Element number</label>
+        <input id="Number" name="ElementNumber" type="text" class="form-control" @bind="_dto.Number"/>
+    </div>
+
+    <div class="form-group col-md-2">
+        <label for="Temperature">Temperature</label>
+        <input id="Temperature" name="Temperature" type="text" class="form-control" @bind="_dto.Temperature"/>
+    </div>
+    <div class="form-group col-md-2">
+        <label for="Length">Length</label>
+        <input id="Length" name="Length" type="text" class="form-control" @bind="_dto.Length"/>
+    </div>
+</div>
+
+<div class="add row">
+    <h2>Element Type Selection</h2>
+    <div class="form-group col-md-3">
+        <label for="ElementType">Element type</label>
+        <select id="ElementType" class="form-control" @bind="_dto.SelectedElementType">
+            <option value=""></option>
+            @foreach (var elementType in _data.ElementTypes)
+            {
+            <option value="@elementType">@elementType</option>
+            }
+        </select>
+    </div>
+    
+    @if (_dto.SelectedElementType == nameof(Duct))
+    {
+        <div class="form-group col-md-2">
+            <label for="DuctType">Duct type</label>
+            <select id="DuctType" class="form-control" @bind="_dto.SelectedDuctType">
+                <option value=""></option>
+                @foreach (var type in _data.DuctTypes)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+        @if (_dto.SelectedDuctType == DuctType.Round.ToString())
+        {
+            <div class="form-group col-md-2">
+                <label for="FirstDimension">Radius</label>
+                <input id="FirstDimension" name="FirstDimension" type="text" class="form-control" @bind="_dto.FirstDimension"/>
+            </div>
+        }
+        
+        @if (_dto.SelectedDuctType == DuctType.Rectangular.ToString())
+        {
+            <div class="form-group col-md-2">
+                <label for="FirstDimension">Width</label>
+                <input id="FirstDimension" name="FirstDimension" type="text" class="form-control" @bind="_dto.FirstDimension"/>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="SecondDimension">Height</label>
+                <input id="SecondDimension" name="SecondDimension" type="text" class="form-control" @bind="_dto.SecondDimension"/>
+            </div>
+        }
+    }
+
+    @if (_dto.SelectedElementType == nameof(Pipeline))
+    {
+        <div class="form-group col-md-2">
+            <label for="PipelineType">Pipeline shape</label>
+            <select id="PipelineType" class="form-control" @bind="_dto.SelectedPipelineType">
+                <option value=""></option>
+                @foreach (var type in _data.PipelineTypes)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <label for="FirstDimension">Nominal Diameter</label>
+            <input id="FirstDimension" name="FirstDimension" type="text" class="form-control" @bind="_dto.FirstDimension"/>
+        </div>
+        @if(_dto.SelectedPipelineType == PipelineTypeEnum.Reduction.ToString() || _dto.SelectedPipelineType == PipelineTypeEnum.Tee.ToString())
+        {
+            <div class="form-group col-md-2">
+                <label for="SecondDimension">Secondary Diameter</label>
+                <input id="SecondDimension" name="SecondDimension" type="text" class="form-control" @bind="_dto.SecondDimension"/>
+            </div>
+        }
+        @if (_dto.SelectedPipelineType == PipelineTypeEnum.Elbow.ToString())
+        {
+            <div class="form-group col-md-2">
+                <label for="Angle">Angle</label>
+                <input id="Angle" name="Angle" type="text" class="form-control" @bind="_dto.Angle"/>
+            </div>
+        }
+    }
+
+    @if (_dto.SelectedElementType == nameof(Vessel))
+    {
+        <div class="form-group col-md-2">
+            <label for="FirstDimension">Radius</label>
+            <input id="FirstDimension" name="FirstDimension" type="text" class="form-control" @bind="_dto.FirstDimension"/>
+        </div>
+        <div class="form-group col-md-2">
+            <label for="VesselBottomType">First vessel bottom</label>
+            <select id="VesselBottomType" class="form-control" @bind="_dto.SelectedVesselBottomType1">
+                <option value=""></option>
+                @foreach (var type in _data.VesselBottomTypes)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <label for="VesselBottomType">Second vessel bottom</label>
+            <select id="VesselBottomType" class="form-control" @bind="_dto.SelectedVesselBottomType2">
+                <option value="None">None</option>
+                @foreach (var type in _data.VesselBottomTypes)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+    }
+</div>
+<button class="btn btn-primary" @onclick="Save">Save</button>
+
+@code {
+    private readonly AddElementDto _dto = new ();
+    private AddElementViewData _data = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpClient.BaseAddress = new Uri("http://localhost:5062");
+        await LoadViewData();
+    }
+
+    private async Task LoadViewData()
+    {
+        try
+        {
+            var response = await HttpClient.GetFromJsonAsync<AddElementViewData>("/add-element/load-view-data");
+            _data = response ?? throw new NullReferenceException("Loading add element view data failed");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading element types: {ex.Message}");
+        }
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync("/add-element/save", _dto);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving element: {ex.Message}");
+        }
+    }
+}

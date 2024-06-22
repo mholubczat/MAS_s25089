@@ -1,4 +1,4 @@
-namespace TechnicalInsulation.Models.Elements;
+namespace TechnicalInsulation.Enums;
 
 public enum DuctType
 {

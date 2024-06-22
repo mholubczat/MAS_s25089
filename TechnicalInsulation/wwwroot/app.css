@@ -62,3 +62,9 @@ h1:focus {
     padding: 10px 0;
     border-top: 1px solid #dee2e6;
 }
+
+.add{
+    background: aliceblue;
+    opacity: 0.95;
+    padding: 10px;
+}
