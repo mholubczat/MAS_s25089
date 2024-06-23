@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
-using TechnicalInsulation.Components.Pages;
 using TechnicalInsulation.Enums;
 using TechnicalInsulation.Models.Dtos;
 using TechnicalInsulation.Models.Elements;
@@ -8,7 +7,7 @@ using TechnicalInsulation.Service;
 
 namespace TechnicalInsulation.Controller;
 
-[Route("add-element/")]
+[Route("{scopeId:int}/add-element/")]
 public class AddElementController : ControllerBase
 {
     private readonly IAddElementService _addElementService;
@@ -53,15 +52,25 @@ public class AddElementController : ControllerBase
     }
     
     [HttpPost("save")]
-    public IActionResult Save([FromBody] AddElementDto dto)
+    public async Task<IActionResult> Save([FromBody] AddElementDto dto, CancellationToken cancellationToken, int scopeId)
     {
-        var validationResult = _addElementService.Validate(dto);
-        if (validationResult == false)
+        _addElementService.Validate(dto, ModelState);
+        if (ModelState.IsValid == false)
         {
-            return BadRequest("Invalid data");
+            return BadRequest(ModelState);
         }
         
-        Console.WriteLine(dto);
+        try
+        {
+            await _addElementService.AddElement(scopeId, dto, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            ModelState.AddModelError(nameof(dto.Drawing), exception.Message);
+            return BadRequest(exception.Message);
+        }
+        
         return Created();
     }
 }
+

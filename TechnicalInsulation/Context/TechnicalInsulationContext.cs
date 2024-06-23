@@ -23,6 +23,12 @@ public class TechnicalInsulationContext : DbContext
     public DbSet<Scope> Scopes { get; init; }
     public DbSet<EnvironmentalCorrosivityCategory> CorrosivityCategories { get; init; }
     public DbSet<Element> Elements { get; init; }
+    public DbSet<PipelineType> PipelineTypes { get; init; }
+    public DbSet<VesselBottom> VesselBottoms { get; init; }
+    public DbSet<Product> Products { get; init; }
+    public DbSet<Worker> Workers { get; init; }
+    public DbSet<Production> Productions { get; init; }
+    public DbSet<Material> Materials { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

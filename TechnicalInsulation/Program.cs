@@ -11,7 +11,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAddElementService, AddElementService>();
-builder.Services.AddScoped<IElementRepository, ElementRepository>();
+builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddDbContext<TechnicalInsulationContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();

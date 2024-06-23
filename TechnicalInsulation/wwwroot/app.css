@@ -37,6 +37,7 @@ h1:focus {
 
 .validation-message {
     color: #e50000;
+    font-size: xx-small;
 }
 
 .blazor-error-boundary {

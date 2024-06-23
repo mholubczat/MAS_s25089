@@ -1,3 +1,5 @@
+using TechnicalInsulation.Enums;
+
 namespace TechnicalInsulation.Models.Elements;
 
 public class VesselBottom

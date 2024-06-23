@@ -1,19 +1,21 @@
+using TechnicalInsulation.Enums;
+using TechnicalInsulation.Models.Dtos;
+
 namespace TechnicalInsulation.Models.Elements;
 
 public class Pipeline : Element
 {
     public Pipeline()
     {
-        
     }
     
-    public Pipeline(string drawing, int number, decimal temperature, decimal length, Scope scope, int nominalDiameter, int? secondaryDiameter, int? angle, PipelineType pipelineType) : 
-        base(drawing, number, temperature, length, scope)
+    public Pipeline(Scope scope, PipelineType type, AddElementDto dto) : 
+        base(dto.Drawing!, (int)dto.Number!, (decimal)dto.Temperature!, (decimal)dto.Length!, scope)
     {
-        NominalDiameter = nominalDiameter;
-        SecondaryDiameter = secondaryDiameter;
-        Angle = angle;
-        PipelineType = pipelineType;
+        NominalDiameter = (int)dto.FirstDimension!;
+        SecondaryDiameter = (int?)dto.SecondDimension;
+        Angle = dto.Angle;
+        PipelineType = type;
     }
     
     public int NominalDiameter { get; init; }

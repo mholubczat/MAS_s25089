@@ -21,4 +21,13 @@
       <None Include="wwwroot\insulation.jpg" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+      <Content Update="appsettings.Development.json">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

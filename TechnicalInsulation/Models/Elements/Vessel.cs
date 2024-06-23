@@ -1,3 +1,6 @@
+using TechnicalInsulation.Enums;
+using TechnicalInsulation.Models.Dtos;
+
 namespace TechnicalInsulation.Models.Elements;
 
 public class Vessel : Element
@@ -7,13 +10,14 @@ public class Vessel : Element
         
     }
     
-    public Vessel(decimal length, Scope scope, decimal temperature, string drawing, int number, decimal radius) :
-        base(drawing, number, temperature, length, scope)
+    public Vessel(Scope scope, List<VesselBottom> vesselBottoms, AddElementDto dto) : 
+        base(dto.Drawing!, (int)dto.Number!, (decimal)dto.Temperature!, (decimal)dto.Length!, scope)
     {
-        Radius = radius;
-    } 
-
+        VesselBottoms = vesselBottoms;
+        Radius = (decimal)dto.FirstDimension!;
+    }
+    
     public decimal Radius { get; init; }
     public ICollection<Pipeline> Pipes { get; init; } = new List<Pipeline>();
-    public ICollection<VesselBottom> VesselBottoms { get; init; } = new List<VesselBottom>();
+    public ICollection<VesselBottom> VesselBottoms { get; set; } = new List<VesselBottom>();
 }
